@@ -239,9 +239,10 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
             </div>
 
             <div className="space-y-6">
-              {items.map((item, index) => (
+              {items.map((item, index) => {
                 const filteredSuggestions = getFilteredSuggestions(item.name);
                 
+                return (
                 <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700">Item {index + 1}</span>
@@ -319,7 +320,8 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
             
             {/* Add Another Item Button */}
