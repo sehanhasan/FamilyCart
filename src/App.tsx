@@ -234,7 +234,7 @@ function App() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <ShoppingCart className="h-8 w-8 text-emerald-600" />
-                <h1 className="text-l font-bold text-gray-700">FamilyCart</h1>
+                <h1 className="text-xl font-bold text-gray-700">FamilyCart</h1>
               </div>
             </div>
 
