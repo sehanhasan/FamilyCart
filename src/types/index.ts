@@ -41,3 +41,4 @@ export interface SharedListItem {
   priority: 'low' | 'high';
   status: 'to-buy' | 'bought';
   createdAt: string;
+}
