@@ -44,8 +44,8 @@ function App() {
   }, [users, currentUser]);
 
   // Show loading state
-  if (loading || !currentUser) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-lg">Loading...</div></div>;
-  if (error) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-lg text-red-600">Error: {error}</div></div>;
+  if (loading || !currentUser) return <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#E5E9ED' }}><div className="text-lg">Loading...</div></div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#E5E9ED' }}><div className="text-lg text-red-600">Error: {error}</div></div>;
 
   const addItem = (newItem: Omit<GroceryItem, 'id' | 'createdAt' | 'addedBy'>) => {
     // Check for duplicates
@@ -216,7 +216,7 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${updating ? 'opacity-75 pointer-events-none' : ''}`}>
+    <div className={`min-h-screen ${updating ? 'opacity-75 pointer-events-none' : ''}`} style={{ backgroundColor: '#E5E9ED' }}>
       {/* Loading Overlay */}
       {updating && (
         <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">

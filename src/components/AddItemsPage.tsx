@@ -85,7 +85,7 @@ export function AddItemsPage({ users, currentUser, existingItems, updating = fal
   const selectedUserData = users.find(u => u.id === selectedUser) || currentUser;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#E5E9ED' }}>
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
