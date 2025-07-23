@@ -22,6 +22,18 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Generate suggestions based on common grocery items
+  React.useEffect(() => {
+    const commonItems = [
+      'Milk', 'Bread', 'Eggs', 'Butter', 'Cheese', 'Yogurt', 'Bananas', 'Apples', 
+      'Oranges', 'Tomatoes', 'Onions', 'Garlic', 'Carrots', 'Potatoes', 'Chicken',
+      'Ground Beef', 'Salmon', 'Rice', 'Pasta', 'Olive Oil', 'Salt', 'Pepper',
+      'Cereal', 'Orange Juice', 'Coffee', 'Tea', 'Sugar', 'Flour', 'Paper Towels',
+    ];
+    setSuggestions(commonItems);
+  }, []);
 
   const addNewItem = () => {
     setItems([...items, { name: '', quantity: '', isHighPriority: false }]);
@@ -84,6 +96,16 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
         console.error('Failed to copy to clipboard:', err);
       }
     }
+  };
+
+  const getFilteredSuggestions = (inputValue: string) => {
+    if (inputValue.length === 0) return [];
+    return suggestions
+      .filter(item => 
+        item.toLowerCase().includes(inputValue.toLowerCase()) &&
+        item.toLowerCase() !== inputValue.toLowerCase()
+      )
+      .slice(0, 5);
   };
 
   // Success state - show share URL
@@ -218,6 +240,8 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
 
             <div className="space-y-6">
               {items.map((item, index) => (
+                const filteredSuggestions = getFilteredSuggestions(item.name);
+                
                 <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700">Item {index + 1}</span>
@@ -249,7 +273,7 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
 
                   {/* Quantity and Priority */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
+                    <div className="relative">
                       {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                         Quantity
                       </label> */}
@@ -260,6 +284,23 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                         placeholder="e.g. 2, 1kg, 500g"
                       />
+                      
+                      {/* Suggestions Dropdown */}
+                      {filteredSuggestions.length > 0 && item.name.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 z-10 max-h-40 overflow-y-auto">
+                          {filteredSuggestions.map((suggestion, suggestionIndex) => (
+                            <button
+                              key={suggestionIndex}
+                              type="button"
+                              onClick={() => updateItem(index, 'name', suggestion)}
+                              className="w-full text-left px-3 py-2 hover:bg-gray-50 transition-colors text-sm"
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                        autoComplete="off"
                     </div>
                     
                     <div>

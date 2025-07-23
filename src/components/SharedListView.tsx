@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Clock, AlertCircle, List, ExternalLink } from 'lucide-react';
+import { Check, Clock, AlertCircle, List, ExternalLink, Edit3, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { SharedList, SharedListItem } from '../types';
+import { EditItemModal } from './EditItemModal';
 
 interface SharedListViewProps {
   listId: string;
@@ -22,10 +23,22 @@ export function SharedListView({ listId }: SharedListViewProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'to-buy' | 'bought'>('to-buy');
+  const [editingItem, setEditingItem] = useState<SharedListItem | null>(null);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     loadSharedList();
   }, [listId]);
+
+  // Update page title when list is loaded
+  useEffect(() => {
+    if (list) {
+      document.title = `${list.name} - Shared List`;
+    }
+    return () => {
+      document.title = 'FamilyCart - Grocery Management App';
+    };
+  }, [list]);
 
   const loadSharedList = async () => {
     setLoading(true);
@@ -117,6 +130,63 @@ export function SharedListView({ listId }: SharedListViewProps) {
       console.error('Failed to update list:', err);
       // Revert the local change if update fails
       loadSharedList();
+    }
+  };
+
+  const updateItem = async (itemId: string, updates: Partial<SharedListItem>) => {
+    if (!list) return;
+
+    setUpdating(true);
+    try {
+      const updateData: any = {};
+      
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.quantity !== undefined) updateData.quantity = updates.quantity;
+      if (updates.priority !== undefined) updateData.priority = updates.priority;
+      if (updates.status !== undefined) updateData.status = updates.status;
+
+      const { error } = await supabase
+        .from('shared_list_items')
+        .update(updateData)
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      // Update local state
+      const updatedItems = list.items.map(item => 
+        item.id === itemId ? { ...item, ...updates } : item
+      );
+      setList({ ...list, items: updatedItems });
+    } catch (err) {
+      console.error('Failed to update item:', err);
+      // Reload data on error
+      loadSharedList();
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const deleteItem = async (itemId: string) => {
+    if (!list) return;
+
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('shared_list_items')
+        .delete()
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      // Update local state
+      const updatedItems = list.items.filter(item => item.id !== itemId);
+      setList({ ...list, items: updatedItems });
+    } catch (err) {
+      console.error('Failed to delete item:', err);
+      // Reload data on error
+      loadSharedList();
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -233,7 +303,7 @@ export function SharedListView({ listId }: SharedListViewProps) {
                 return (
                   <div
                     key={item.id}
-                    className={`p-4 transition-all duration-200 hover:bg-gray-50 ${
+                    className={`p-4 transition-all duration-200 hover:bg-gray-50 ${updating ? 'opacity-50' : ''} ${
                       item.status === 'bought' ? 'opacity-75 bg-gray-50' : ''
                     }`}
                   >
@@ -241,13 +311,18 @@ export function SharedListView({ listId }: SharedListViewProps) {
                       {/* Status Toggle */}
                       <button
                         onClick={() => toggleItemStatus(item.id)}
-                        className={`mt-0.5 flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        className={`mt-0.5 flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center transition-colors ${updating ? 'opacity-50 cursor-not-allowed' : ''} ${
                           item.status === 'bought'
                             ? 'bg-emerald-600 border-emerald-600 text-white'
                             : 'border-gray-300 hover:border-emerald-500'
                         }`}
+                        disabled={updating}
                       >
-                        {item.status === 'bought' && <Check className="h-4 w-4" />}
+                        {updating ? (
+                          <div className="animate-spin rounded-full h-3 w-3 border-b border-gray-400"></div>
+                        ) : (
+                          item.status === 'bought' && <Check className="h-4 w-4" />
+                        )}
                       </button>
 
                       {/* Item Content */}
@@ -273,6 +348,26 @@ export function SharedListView({ listId }: SharedListViewProps) {
                               )}
                             </div>
                           </div>
+
+                          {/* Actions */}
+                          {activeTab === 'to-buy' && (
+                            <div className="flex items-center space-x-2 ml-4">
+                              <button
+                                onClick={() => setEditingItem(item)}
+                                className={`p-1.5 text-gray-400 hover:text-emerald-600 transition-colors rounded-md hover:bg-emerald-50 ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={updating}
+                              >
+                                <Edit3 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => deleteItem(item.id)}
+                                className={`p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded-md hover:bg-red-50 ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={updating}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -283,6 +378,41 @@ export function SharedListView({ listId }: SharedListViewProps) {
           </div>
         )}
       </main>
+
+      {/* Edit Item Modal */}
+      {editingItem && (
+        <EditItemModal
+          onClose={() => setEditingItem(null)}
+          onUpdateItem={(updatedItem) => {
+            updateItem(editingItem.id, {
+              name: updatedItem.name,
+              quantity: updatedItem.quantity,
+              priority: updatedItem.priority,
+            });
+            setEditingItem(null);
+          }}
+          existingItems={list?.items.map(item => ({
+            id: item.id,
+            name: item.name,
+            category: 'Groceries',
+            quantity: item.quantity,
+            priority: item.priority,
+            status: item.status,
+            createdAt: item.createdAt,
+            addedBy: '',
+          })) || []}
+          editingItem={{
+            id: editingItem.id,
+            name: editingItem.name,
+            category: 'Groceries',
+            quantity: editingItem.quantity,
+            priority: editingItem.priority,
+            status: editingItem.status,
+            createdAt: editingItem.createdAt,
+            addedBy: '',
+          }}
+        />
+      )}
     </div>
   );
 }
