@@ -25,3 +25,19 @@ export interface Notification {
   timestamp: string;
   isRead: boolean;
 }
+
+export interface SharedList {
+  id: string;
+  name: string;
+  items: SharedListItem[];
+  createdAt: string;
+  shareUrl: string;
+}
+
+export interface SharedListItem {
+  id: string;
+  name: string;
+  quantity: string;
+  priority: 'low' | 'high';
+  status: 'to-buy' | 'bought';
+  createdAt: string;

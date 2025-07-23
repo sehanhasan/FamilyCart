@@ -1,22 +1,25 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, ShoppingCart, Search } from 'lucide-react';
+import { Plus, ShoppingCart, Search, List } from 'lucide-react';
 import { GroceryList } from './components/GroceryList';
 import { AddItemsPage } from './components/AddItemsPage';
+import { CreateListPage } from './components/CreateListPage';
+import { SharedListView } from './components/SharedListView';
 import { EditItemModal } from './components/EditItemModal';
 import { DuplicateModal } from './components/DuplicateModal';
 import { useSupabaseData } from './hooks/useSupabaseData';
+import { useSharedLists } from './hooks/useSharedLists';
 import { GroceryItem, User as UserType } from './types';
 
 function App() {
   const { users, items, loading, updating, error, addItem: addItemToDb, addMultipleItems: addMultipleItemsToDb, updateItem: updateItemInDb, deleteItem: deleteItemFromDb, clearBoughtItems: clearBoughtItemsFromDb } = useSupabaseData();
+  const { createSharedList, creating: creatingList } = useSharedLists();
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [activeTab, setActiveTab] = useState<'to-buy' | 'bought'>('to-buy');
-  const [currentPage, setCurrentPage] = useState<'main' | 'add-items'>('main');
+  const [currentPage, setCurrentPage] = useState<'main' | 'add-items' | 'create-list' | 'shared-list'>('main');
   const [editingItem, setEditingItem] = useState<GroceryItem | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [duplicateItems, setDuplicateItems] = useState<{ newItem: Omit<GroceryItem, 'id' | 'createdAt' | 'addedBy'> & { addedBy: string }; existingItem: GroceryItem }[]>([]);
-  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   // Move all useMemo calls before conditional returns
   const filteredByTab = items.filter(item => item.status === activeTab.replace('-', '-') as 'to-buy' | 'bought');
