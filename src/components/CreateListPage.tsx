@@ -234,9 +234,9 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
 
                   {/* Item Name */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                       Name *
-                    </label>
+                    </label> */}
                     <input
                       type="text"
                       value={item.name}
@@ -250,9 +250,9 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
                   {/* Quantity and Priority */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                         Quantity
-                      </label>
+                      </label> */}
                       <input
                         type="text"
                         value={item.quantity}
@@ -271,7 +271,7 @@ export function CreateListPage({ onBack, onCreateList }: CreateListPageProps) {
                           type="checkbox"
                           checked={item.isHighPriority}
                           onChange={(e) => updateItem(index, 'isHighPriority', e.target.checked)}
-                          className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                          className="h-6 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                         />
                         <span className="text-sm text-gray-700">Mark as Urgent</span>
                       </label>
