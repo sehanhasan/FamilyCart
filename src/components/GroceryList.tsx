@@ -149,7 +149,7 @@ export function GroceryList({ items, users, currentUser, updating, onUpdateItem,
                             </h4>
                             
                             <div className="flex items-center space-x-4 mt-1">
-                              <span className="text-sm text-gray-500">
+                              <span className="text-m text-gray-500">
                                 Qty: {item.quantity}
                               </span>
                               
