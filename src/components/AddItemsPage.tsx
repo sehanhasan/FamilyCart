@@ -236,7 +236,7 @@ export function AddItemsPage({ users, currentUser, existingItems, updating = fal
             <button
               type="button"
               onClick={onBack}
-              className={`px-6 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`px-6 py-3 bg-gray-50 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={updating}
             >
               Cancel
