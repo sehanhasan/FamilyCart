@@ -37,14 +37,15 @@ export function SharedListView({ listId }: SharedListViewProps) {
         .from('shared_lists')
         .select('*')
         .eq('id', listId)
-        .single();
+        .maybeSingle();
 
       if (listError) {
-        if (listError.code === 'PGRST116') {
-          setError('List not found');
-        } else {
-          throw listError;
-        }
+        throw listError;
+        return;
+      }
+
+      if (!listData) {
+        setError('List not found');
         return;
       }
 
