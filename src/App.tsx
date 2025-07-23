@@ -11,6 +11,16 @@ import { useSharedLists } from './hooks/useSharedLists';
 import { GroceryItem, User as UserType } from './types';
 
 function App() {
+  // Check if we're viewing a shared list
+  const urlPath = window.location.pathname;
+  const isSharedList = urlPath.startsWith('/list/');
+  const listId = isSharedList ? urlPath.replace('/list/', '') : null;
+
+  // If viewing a shared list, render SharedListView directly
+  if (isSharedList && listId) {
+    return <SharedListView listId={listId} />;
+  }
+
   const { users, items, loading, updating, error, addItem: addItemToDb, addMultipleItems: addMultipleItemsToDb, updateItem: updateItemInDb, deleteItem: deleteItemFromDb, clearBoughtItems: clearBoughtItemsFromDb } = useSupabaseData();
   const { createSharedList, creating: creatingList } = useSharedLists();
   const [currentUser, setCurrentUser] = useState<UserType | null>(null);

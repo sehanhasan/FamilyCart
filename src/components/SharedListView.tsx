@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Check, Clock, AlertCircle, List, ExternalLink } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { SharedList, SharedListItem } from '../types';
 
 interface SharedListViewProps {
@@ -31,20 +32,50 @@ export function SharedListView({ listId }: SharedListViewProps) {
     setError(null);
     
     try {
-      // Get from localStorage (in a real app, this would be an API call)
-      const savedLists = localStorage.getItem('sharedLists');
-      if (savedLists) {
-        const lists: SharedList[] = JSON.parse(savedLists);
-        const foundList = lists.find(l => l.id === listId);
-        
-        if (foundList) {
-          setList(foundList);
-        } else {
+      // Get list details from database
+      const { data: listData, error: listError } = await supabase
+        .from('shared_lists')
+        .select('*')
+        .eq('id', listId)
+        .single();
+
+      if (listError) {
+        if (listError.code === 'PGRST116') {
           setError('List not found');
+        } else {
+          throw listError;
         }
-      } else {
-        setError('List not found');
+        return;
       }
+
+      // Get list items from database
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('shared_list_items')
+        .select('*')
+        .eq('list_id', listId)
+        .order('created_at');
+
+      if (itemsError) throw itemsError;
+
+      // Transform data to match our types
+      const transformedItems: SharedListItem[] = (itemsData || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        priority: item.priority as 'low' | 'high',
+        status: item.status as 'to-buy' | 'bought',
+        createdAt: item.created_at,
+      }));
+
+      const sharedList: SharedList = {
+        id: listData.id,
+        name: listData.name,
+        items: transformedItems,
+        createdAt: listData.created_at,
+        shareUrl: listData.share_url,
+      };
+
+      setList(sharedList);
     } catch (err) {
       setError('Failed to load list');
       console.error('Error loading shared list:', err);
@@ -65,16 +96,26 @@ export function SharedListView({ listId }: SharedListViewProps) {
     const updatedList = { ...list, items: updatedItems };
     setList(updatedList);
 
-    // Update localStorage
+    // Update database
     try {
-      const savedLists = localStorage.getItem('sharedLists');
-      if (savedLists) {
-        const lists: SharedList[] = JSON.parse(savedLists);
-        const updatedLists = lists.map(l => l.id === listId ? updatedList : l);
-        localStorage.setItem('sharedLists', JSON.stringify(updatedLists));
+      const item = updatedItems.find(i => i.id === itemId);
+      if (item) {
+        supabase
+          .from('shared_list_items')
+          .update({ status: item.status })
+          .eq('id', itemId)
+          .then(({ error }) => {
+            if (error) {
+              console.error('Failed to update item status:', error);
+              // Revert the local change if database update fails
+              loadSharedList();
+            }
+          });
       }
     } catch (err) {
       console.error('Failed to update list:', err);
+      // Revert the local change if update fails
+      loadSharedList();
     }
   };
 

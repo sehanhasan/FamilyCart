@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { SharedList, SharedListItem } from '../types';
 
 export function useSharedLists() {
@@ -10,30 +11,35 @@ export function useSharedLists() {
     try {
       // Generate unique ID
       const listId = `list_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const shareUrl = `${window.location.origin}/list/${listId}`;
       
-      // Create list items with IDs
-      const listItems: SharedListItem[] = items.map((item, index) => ({
-        ...item,
-        id: `item_${Date.now()}_${index}`,
-        createdAt: new Date().toISOString(),
+      // Insert the shared list into database
+      const { error: listError } = await supabase
+        .from('shared_lists')
+        .insert({
+          id: listId,
+          name,
+          share_url: shareUrl,
+        });
+
+      if (listError) throw listError;
+
+      // Insert the list items into database
+      const itemsToInsert = items.map(item => ({
+        list_id: listId,
+        name: item.name,
+        quantity: item.quantity,
+        priority: item.priority,
+        status: item.status,
       }));
 
-      // Create the shared list
-      const sharedList: SharedList = {
-        id: listId,
-        name,
-        items: listItems,
-        createdAt: new Date().toISOString(),
-        shareUrl: `${window.location.origin}/list/${listId}`,
-      };
+      const { error: itemsError } = await supabase
+        .from('shared_list_items')
+        .insert(itemsToInsert);
 
-      // Save to localStorage (in a real app, this would be saved to a database)
-      const existingLists = localStorage.getItem('sharedLists');
-      const lists: SharedList[] = existingLists ? JSON.parse(existingLists) : [];
-      lists.push(sharedList);
-      localStorage.setItem('sharedLists', JSON.stringify(lists));
+      if (itemsError) throw itemsError;
 
-      return sharedList.shareUrl;
+      return shareUrl;
     } catch (error) {
       console.error('Error creating shared list:', error);
       throw new Error('Failed to create list. Please try again.');
