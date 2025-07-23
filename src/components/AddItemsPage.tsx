@@ -206,7 +206,7 @@ export function AddItemsPage({ users, currentUser, existingItems, updating = fal
                             type="checkbox"
                             checked={item.isHighPriority}
                             onChange={(e) => updateItem(index, 'isHighPriority', e.target.checked)}
-                            className="h-2 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                            className="h-6 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
                           />
                           <span className="text-sm text-gray-700">Mark as Urgent</span>
                         </label>
