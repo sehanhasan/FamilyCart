@@ -96,14 +96,14 @@ export function GroceryList({ items, users, currentUser, updating, onUpdateItem,
                     <p className="text-sm text-gray-500">{userItems.length} item(s)</p>
                   </div>
                 </div>
-                {activeTab === 'bought' && userItems.length > 0 && (
+                {/* {activeTab === 'bought' && userItems.length > 0 && (
                   <button
                     onClick={onClearBought}
                     className="text-sm text-red-600 hover:text-red-700 transition-colors font-medium"
                   >
                     Clear All
                   </button> 
-                )} 
+                )} */}
               </div>
             </div>
 
