@@ -218,6 +218,14 @@ function App() {
     );
   }
 
+  if (currentPage === 'create-list') {
+    return (
+      <CreateListPage
+        onBack={() => setCurrentPage('main')}
+        onCreateList={createSharedList}
+      />
+    );
+  }
   return (
     <div className={`min-h-screen ${updating ? 'opacity-75 pointer-events-none' : ''}`} style={{ backgroundColor: '#E5E9ED' }}>
       {/* Loading Overlay */}
