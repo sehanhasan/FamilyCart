@@ -145,7 +145,7 @@ function App() {
         : duplicate.existingItem.priority;
       
       updateItemInDb(duplicate.existingItem.id, {
-        quantity: duplicate.existingItem.quantity + duplicate.newItem.quantity,
+        quantity: `${duplicate.existingItem.quantity} + ${duplicate.newItem.quantity}`,
         priority: newPriority,
       }).then(() => {
         console.log('Item merged and data refreshed');

@@ -74,7 +74,7 @@ export function DuplicateModal({ duplicates, onDecision, onClose }: DuplicateMod
               className="w-full flex items-center justify-center space-x-2 bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 transition-colors"
             >
               <Merge className="h-4 w-4" />
-              <span>Merge (Qty: {`${currentDuplicate.existingItem.quantity} + ${currentDuplicate.newItem.quantity}`})</span>
+              <span>Merge (Qty: {currentDuplicate.existingItem.quantity} + {currentDuplicate.newItem.quantity})</span>
             </button>
             
             <button
