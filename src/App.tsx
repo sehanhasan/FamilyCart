@@ -20,6 +20,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [duplicateItems, setDuplicateItems] = useState<{ newItem: Omit<GroceryItem, 'id' | 'createdAt' | 'addedBy'> & { addedBy: string }; existingItem: GroceryItem }[]>([]);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   // Move all useMemo calls before conditional returns
   const filteredByTab = items.filter(item => item.status === activeTab.replace('-', '-') as 'to-buy' | 'bought');
