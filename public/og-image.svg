@@ -1,0 +1,15 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#F9FAFB"/>
+  
+  <!-- Shopping Cart Icon -->
+  <g transform="translate(500, 200)">
+    <path d="m20 20 80 80 53.6 267.8a40 40 0 0 0 40 32.2h194.4a40 40 0 0 0 40-32.2L440 120H120" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="180" cy="440" r="20" fill="#10B981"/>
+    <circle cx="400" cy="440" r="20" fill="#10B981"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="500" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#1F2937">FamilyCart</text>
+  <text x="600" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="24" text-anchor="middle" fill="#6B7280">Grocery Management App</text>
+</svg>
