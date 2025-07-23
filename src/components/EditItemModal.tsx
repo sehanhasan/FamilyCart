@@ -125,9 +125,6 @@ export function EditItemModal({ onClose, onUpdateItem, existingItems, editingIte
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                &nbsp;
-              </label>
               <label className="flex items-center space-x-2 cursor-pointer"
               >
                 <input
